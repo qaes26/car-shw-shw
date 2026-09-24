@@ -2,7 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#12020b">
   <title>عوالم العشق الأبدي | لعيون شادية 💖</title>
   
   <!-- خطوط عربية أصيلة وملكية فاخرة من Google Fonts -->
@@ -29,12 +33,17 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
+      touch-action: none;
     }
 
-    body {
-      width: 100vw;
-      height: 100vh;
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       overflow: hidden;
+      touch-action: none;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: auto;
       background: radial-gradient(circle at center, #260517 0%, #12020b 60%, #050004 100%);
       font-family: 'Cairo', sans-serif;
       color: #fff;
@@ -48,20 +57,24 @@
       position: relative;
       width: 100%;
       height: 100%;
-      max-width: 530px;
-      max-height: 940px;
+      height: 100dvh;
+      max-width: 100%;
+      max-height: 100%;
       background: #141619;
       box-shadow: 0 0 70px rgba(201, 24, 74, 0.45), 0 0 120px rgba(0, 0, 0, 0.95);
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      touch-action: none;
     }
 
     @media (min-width: 531px) {
       #game-container {
+        max-width: 520px;
+        max-height: 940px;
+        height: 96vh;
         border-radius: 32px;
         border: 2px solid var(--border-glow);
-        height: 96vh;
       }
     }
 
@@ -85,13 +98,13 @@
       background: radial-gradient(circle at 50% 80%, rgba(255, 117, 143, 0.12) 0%, transparent 60%);
     }
 
-    /* شريط الواجهة العلوية الفخم */
+    /* شريط الواجهة العلوية الفخم المتوافق مع الهواتف ونوتش الشاشة */
     #hud {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      padding: 14px 16px;
+      padding: max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left));
       z-index: 10;
       display: flex;
       flex-direction: column;
@@ -317,13 +330,13 @@
       opacity: 1;
     }
 
-    /* أزرار اللمس للموبايل */
+    /* أزرار اللمس للموبايل المتوافقة مع أسفل شاشات الهواتف الحديثة */
     #touch-controls {
       position: absolute;
-      bottom: 22px;
+      bottom: max(20px, env(safe-area-inset-bottom));
       left: 0;
       width: 100%;
-      padding: 0 26px;
+      padding: 0 max(22px, env(safe-area-inset-left)) 0 max(22px, env(safe-area-inset-right));
       display: flex;
       justify-content: space-between;
       z-index: 10;
@@ -529,14 +542,15 @@
       position: relative;
       width: 100%;
       max-width: 440px;
+      max-height: 90dvh;
+      overflow-y: auto;
       background: linear-gradient(170deg, #fffef9 0%, #fff6e8 100%);
       border-radius: 28px;
-      padding: 34px 24px 24px;
+      padding: clamp(20px, 4vh, 34px) 22px 22px;
       text-align: center;
       box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 50px rgba(201, 24, 74, 0.6);
       transform: scale(0.8) translateY(30px);
       transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      overflow: hidden;
       border: 3px solid #d4af37;
       color: #2b0918;
     }
@@ -1773,6 +1787,13 @@
       if (keys.ArrowLeft || keys.KeyA) steer -= 1;
       if (keys.ArrowRight || keys.KeyD) steer += 1;
 
+      if (isTouchingScreen && touchTargetX !== null) {
+        const diff = touchTargetX - car.x;
+        if (Math.abs(diff) > 10) {
+          steer = Math.sign(diff);
+        }
+      }
+
       if (steer !== 0) {
         car.speedX += steer * 0.75;
         if (Math.abs(car.speedX) > car.maxSpeedX) {
@@ -1823,6 +1844,7 @@
           document.getElementById('love-percent').textContent = loveLevel + '%';
 
           sound.playChime();
+          if (navigator.vibrate) navigator.vibrate([15, 30, 20]);
           createSparkleBurst(heart.x, heart.y);
 
           triggerLoveModal();
@@ -1926,15 +1948,57 @@
       if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
     });
 
-    // أزرار اللمس
+    // التحكم عبر لمس وسحب الشاشة مباشرة للهواتف
+    let isTouchingScreen = false;
+    let touchTargetX = null;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        isTouchingScreen = true;
+        const rect = canvas.getBoundingClientRect();
+        touchTargetX = e.touches[0].clientX - rect.left;
+        if (navigator.vibrate) navigator.vibrate(10);
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0 && isTouchingScreen) {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        touchTargetX = e.touches[0].clientX - rect.left;
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+      isTouchingScreen = false;
+      touchTargetX = null;
+    });
+
+    canvas.addEventListener('touchcancel', () => {
+      isTouchingScreen = false;
+      touchTargetX = null;
+    });
+
+    // منع القوائم المنبثقة الافتراضية عند الضغط المطول بالهاتف
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // أزرار اللمس الجانبية للهاتف مع الاهتزاز التفاعلي
     const btnL = document.getElementById('btn-left');
     const btnR = document.getElementById('btn-right');
 
-    btnL.addEventListener('pointerdown', (e) => { e.preventDefault(); keys.ArrowLeft = true; });
+    btnL.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      keys.ArrowLeft = true;
+      if (navigator.vibrate) navigator.vibrate(12);
+    });
     btnL.addEventListener('pointerup', (e) => { e.preventDefault(); keys.ArrowLeft = false; });
     btnL.addEventListener('pointerleave', (e) => { e.preventDefault(); keys.ArrowLeft = false; });
 
-    btnR.addEventListener('pointerdown', (e) => { e.preventDefault(); keys.ArrowRight = true; });
+    btnR.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      keys.ArrowRight = true;
+      if (navigator.vibrate) navigator.vibrate(12);
+    });
     btnR.addEventListener('pointerup', (e) => { e.preventDefault(); keys.ArrowRight = false; });
     btnR.addEventListener('pointerleave', (e) => { e.preventDefault(); keys.ArrowRight = false; });
 
