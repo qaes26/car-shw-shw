@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>عوالم العشق الأبدي | لعيون شادية 💖</title>
+  
+  <!-- خطوط عربية أصيلة وملكية فاخرة من Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,700;1,700&family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;600;700;800;900&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --luxury-gold: #ffd166;
+      --gold-dark: #c59b27;
+      --royal-red: #c9184a;
+      --deep-crimson: #590d22;
+      --rose-pink: #ff758f;
+      --soft-parchment: #fffdfa;
+      --hud-glass: rgba(22, 5, 17, 0.85);
+      --border-glow: rgba(255, 209, 102, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #260517 0%, #12020b 60%, #050004 100%);
+      font-family: 'Cairo', sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 1s ease;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 530px;
+      max-height: 940px;
+      background: #141619;
+      box-shadow: 0 0 70px rgba(201, 24, 74, 0.45), 0 0 120px rgba(0, 0, 0, 0.95);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 531px) {
+      #game-container {
+        border-radius: 32px;
+        border: 2px solid var(--border-glow);
+        height: 96vh;
+      }
+    }
+
+    #gameCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+    }
+
+    /* طبقة الإضاءة السينمائية المتغيرة حسب العالم */
+    #ambient-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      transition: background 1.2s ease;
+      background: radial-gradient(circle at 50% 80%, rgba(255, 117, 143, 0.12) 0%, transparent 60%);
+    }
+
+    /* شريط الواجهة العلوية الفخم */
+    #hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 14px 16px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .hud-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hud-pill {
+      background: var(--hud-glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid var(--border-glow);
+      border-radius: 20px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      pointer-events: auto;
+    }
+
+    .hud-pill-icon {
+      font-size: 1.35rem;
+      filter: drop-shadow(0 0 8px var(--rose-pink));
+      animation: pulseIcon 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulseIcon {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.18); }
+    }
+
+    .hud-pill-data {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hud-pill-label {
+      font-size: 0.68rem;
+      color: #ffcad4;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .hud-pill-value {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.1;
+      text-shadow: 0 0 10px rgba(255, 209, 102, 0.7);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hud-buttons {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .hud-btn {
+      background: rgba(201, 24, 74, 0.28);
+      border: 1.5px solid var(--border-glow);
+      color: #fff;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    }
+
+    .hud-btn:hover {
+      background: var(--royal-red);
+      transform: scale(1.08);
+      box-shadow: 0 0 18px var(--royal-red);
+    }
+
+    /* شريط مؤشر المنطقة / العالم الحالي */
+    .zone-indicator-bar {
+      background: rgba(18, 3, 13, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid var(--border-glow);
+      border-radius: 30px;
+      padding: 4px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.5);
+      pointer-events: auto;
+    }
+
+    .zone-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .zone-tag {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--luxury-gold);
+      text-shadow: 0 0 8px rgba(255, 209, 102, 0.6);
+    }
+
+    .zone-switch-btn {
+      background: linear-gradient(135deg, rgba(201, 24, 74, 0.6), rgba(255, 209, 102, 0.4));
+      border: 1px solid var(--luxury-gold);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .zone-switch-btn:hover {
+      background: var(--royal-red);
+      transform: scale(1.05);
+    }
+
+    /* شريط مقياس المحبة */
+    .love-gauge-box {
+      background: rgba(16, 2, 11, 0.82);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      border-radius: 30px;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .gauge-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, #c9184a, #ff758f, #ffd166);
+      box-shadow: 0 0 10px rgba(255, 117, 143, 0.8);
+      border-radius: 10px;
+      transition: width 0.4s ease-out;
+    }
+
+    /* لافتة إعلان الانتقال بين العوالم (Zone Banner Notification) */
+    #world-transition-banner {
+      position: absolute;
+      top: 108px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: linear-gradient(135deg, rgba(89, 13, 34, 0.95), rgba(20, 2, 14, 0.98));
+      backdrop-filter: blur(14px);
+      border: 2px solid var(--luxury-gold);
+      border-radius: 40px;
+      padding: 8px 24px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 209, 102, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 25;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #world-transition-banner.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* إشعار عائم سريع */
+    #quick-toast {
+      position: absolute;
+      top: 160px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(201, 24, 74, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid #ffd166;
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(201, 24, 74, 0.6);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      transition: all 0.35s ease;
+      white-space: nowrap;
+    }
+
+    #quick-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* أزرار اللمس للموبايل */
+    #touch-controls {
+      position: absolute;
+      bottom: 22px;
+      left: 0;
+      width: 100%;
+      padding: 0 26px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .touch-btn {
+      width: 72px;
+      height: 72px;
+      background: rgba(26, 5, 17, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 2px solid var(--luxury-gold);
+      border-radius: 50%;
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 20px rgba(201, 24, 74, 0.35);
+      transition: all 0.15s ease;
+      touch-action: manipulation;
+    }
+
+    .touch-btn:active {
+      background: linear-gradient(135deg, var(--royal-red), #590d22);
+      transform: scale(0.92);
+      box-shadow: 0 0 25px var(--royal-red);
+    }
+
+    /* شاشة البداية الملكية الأنيقة */
+    #start-screen {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 35%, rgba(68, 12, 33, 0.98) 0%, rgba(18, 3, 11, 0.99) 75%, #050004 100%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 26px;
+      text-align: center;
+      transition: opacity 0.5s ease;
+    }
+
+    .hero-crown {
+      font-size: 3.2rem;
+      margin-bottom: -5px;
+      animation: floatCrown 4s infinite ease-in-out;
+      filter: drop-shadow(0 0 15px rgba(255, 209, 102, 0.8));
+    }
+
+    @keyframes floatCrown {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    .hero-tag {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--luxury-gold);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 4rem;
+      background: linear-gradient(135deg, #ffffff 0%, #ffe4a0 30%, #ff758f 65%, #ffd166 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textShine 4s linear infinite;
+      line-height: 1.15;
+      filter: drop-shadow(0 0 25px rgba(201, 24, 74, 0.7));
+      margin-bottom: 12px;
+    }
+
+    @keyframes textShine {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .hero-desc {
+      font-size: 1.15rem;
+      color: #ffe5ec;
+      line-height: 1.65;
+      max-width: 390px;
+      font-family: 'Amiri', serif;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
+
+    .hero-desc span {
+      color: var(--luxury-gold);
+    }
+
+    /* محدد اختيار لون السيارة المبدئي */
+    .car-selector-box {
+      margin-bottom: 22px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      border-radius: 20px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .car-selector-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #ffd166;
+    }
+
+    .car-color-dots {
+      display: flex;
+      gap: 10px;
+    }
+
+    .color-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    .color-dot.active {
+      transform: scale(1.22);
+      border-color: #ffd166;
+      box-shadow: 0 0 15px #ffd166;
+    }
+
+    .color-dot.red { background: linear-gradient(135deg, #c9184a, #590d22); }
+    .color-dot.pink { background: linear-gradient(135deg, #ff758f, #ff4d6d); }
+    .color-dot.gold { background: linear-gradient(135deg, #ffd166, #d4af37); }
+    .color-dot.cyan { background: linear-gradient(135deg, #00b4d8, #0077b6); }
+
+    .start-game-btn {
+      background: linear-gradient(135deg, #c9184a 0%, #800f2f 50%, #ff758f 100%);
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      padding: 14px 46px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 12px 35px rgba(201, 24, 74, 0.75), 0 0 25px rgba(255, 209, 102, 0.5);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: pulseButton 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseButton {
+      0%, 100% { transform: scale(1); box-shadow: 0 12px 35px rgba(201, 24, 74, 0.75); }
+      50% { transform: scale(1.05); box-shadow: 0 16px 45px rgba(201, 24, 74, 0.95); }
+    }
+
+    .start-game-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .controls-hint {
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ========================================================
+       رسالة العشق الملكية المخملية (Royal Love Letter)
+       ======================================================== */
+    #love-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 1, 6, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+
+    #love-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .royal-letter {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(170deg, #fffef9 0%, #fff6e8 100%);
+      border-radius: 28px;
+      padding: 34px 24px 24px;
+      text-align: center;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 50px rgba(201, 24, 74, 0.6);
+      transform: scale(0.8) translateY(30px);
+      transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      border: 3px solid #d4af37;
+      color: #2b0918;
+    }
+
+    .royal-letter::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: linear-gradient(90deg, #d4af37, #ffd166, #c59b27, #ffd166, #d4af37);
+    }
+
+    .letter-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(201, 24, 74, 0.1);
+      border: 1px solid rgba(201, 24, 74, 0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #800f2f;
+      margin-bottom: 12px;
+    }
+
+    .wax-seal {
+      width: 66px;
+      height: 66px;
+      margin: 0 auto 12px;
+      background: radial-gradient(circle, #c9184a, #590d22);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.1rem;
+      box-shadow: 0 8px 25px rgba(201, 24, 74, 0.65), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      border: 2px solid #ffd166;
+      animation: sealPulse 1.4s infinite ease-in-out;
+    }
+
+    @keyframes sealPulse {
+      0% { transform: scale(1); }
+      14% { transform: scale(1.18); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.12); }
+      70% { transform: scale(1); }
+    }
+
+    .letter-salutation {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 2.1rem;
+      color: #800f2f;
+      margin-bottom: 10px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .letter-body {
+      background: rgba(212, 175, 55, 0.08);
+      border-radius: 18px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      position: relative;
+    }
+
+    .letter-quote {
+      font-family: 'Amiri', serif;
+      font-size: 1.42rem;
+      font-weight: 700;
+      line-height: 1.7;
+      color: #2b0918;
+      min-height: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .letter-footer-meta {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #800f2f;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .continue-btn {
+      background: linear-gradient(135deg, #c9184a 0%, #800f2f 100%);
+      color: white;
+      border: 2px solid #ffd166;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      padding: 13px 32px;
+      border-radius: 40px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(201, 24, 74, 0.65);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .continue-btn:hover {
+      background: linear-gradient(135deg, #ff758f 0%, #c9184a 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 35px rgba(201, 24, 74, 0.85);
+    }
+
+    #love-modal.active .royal-letter {
+      transform: scale(1) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- طبقة الإضاءة السينمائية -->
+    <div id="ambient-overlay"></div>
+
+    <!-- شريط الواجهة العلوية الفخمة -->
+    <div id="hud">
+      <div class="hud-top-bar">
+        <div class="hud-pill">
+          <span class="hud-pill-icon">💌</span>
+          <div class="hud-pill-data">
+            <span class="hud-pill-label">قلوب شادية</span>
+            <span class="hud-pill-value" id="hearts-val">0</span>
+          </div>
+        </div>
+
+        <div class="hud-pill">
+          <span class="hud-pill-icon">🛣️</span>
+          <div class="hud-pill-data">
+            <span class="hud-pill-label">مسافة العشق</span>
+            <span class="hud-pill-value" id="dist-val">0m</span>
+          </div>
+        </div>
+
+        <div class="hud-buttons">
+          <button class="hud-btn" id="car-color-btn" title="تبديل لون السيارة">🚗</button>
+          <button class="hud-btn" id="sound-btn" title="كتم / تشغيل النغمات">🎵</button>
+        </div>
+      </div>
+
+      <!-- مؤشر المنطقة / العالم الحالي مع إمكانية التبديل -->
+      <div class="zone-indicator-bar">
+        <div class="zone-info">
+          <span id="zone-icon">🌹</span>
+          <span class="zone-tag" id="zone-title">بوليفارد الورود والغروب</span>
+        </div>
+        <button class="zone-switch-btn" id="switch-zone-btn">
+          <span>تغيير العالم 🎨</span>
+        </button>
+      </div>
+
+      <!-- مقياس عشق شادية -->
+      <div class="love-gauge-box">
+        <span style="font-size: 0.72rem; font-weight: 800; color: #ffd166; white-space: nowrap;">مقياس الغرام ❤️</span>
+        <div class="gauge-track">
+          <div class="gauge-fill" id="love-fill"></div>
+        </div>
+        <span id="love-percent" style="font-size: 0.75rem; font-weight: 800; color: #ffd166;">25%</span>
+      </div>
+    </div>
+
+    <!-- لافتة إعلان الانتقال بين العوالم -->
+    <div id="world-transition-banner">
+      <span id="banner-icon">🌊</span>
+      <span id="banner-text">مرحباً بكِ في: طريق الساحل وبحر العشق يا شادية 💖</span>
+    </div>
+
+    <!-- إشعار عائم سريع -->
+    <div id="quick-toast">💖 نبضة حب جديدة لشادية! 💖</div>
+
+    <!-- أزرار اللمس للموبايل -->
+    <div id="touch-controls">
+      <button class="touch-btn" id="btn-left" aria-label="يسار">◀</button>
+      <button class="touch-btn" id="btn-right" aria-label="يمين">▶</button>
+    </div>
+
+    <!-- شاشة البداية الملكية -->
+    <div id="start-screen">
+      <div class="hero-crown">👑</div>
+      <div class="hero-tag">رحلة العمر والوفاء</div>
+      <h1 class="hero-title">إلى شادية</h1>
+      <p class="hero-desc">
+        سافري بسيارتكِ بين <span>عوالم العشق الأربعة</span> (بوليفارد الورود، ساحل البحر، ليل النجوم، وخريف الذهب)، واجمعي <span>قلوب الياقوت</span> لتكتشفي رسائل الشوق العميقة المكتوبة لكِ وحدكِ يا أغلى حب.. ❤️
+      </p>
+
+      <div class="car-selector-box">
+        <span class="car-selector-title">اختر لون السيارة:</span>
+        <div class="car-color-dots">
+          <div class="color-dot red active" data-color="red" title="أحمر ملكي"></div>
+          <div class="color-dot pink" data-color="pink" title="وردي فاتن"></div>
+          <div class="color-dot gold" data-color="gold" title="ذهبي مخملي"></div>
+          <div class="color-dot cyan" data-color="cyan" title="فيروزي ساحلي"></div>
+        </div>
+      </div>
+
+      <button class="start-game-btn" id="start-btn">
+        <span>ابدئي رحلتكِ يا قمر</span>
+        <span>🌹</span>
+      </button>
+
+      <div class="controls-hint">
+        <span>💡 التحكم: أسهم لوحة المفاتيح (⬅️ ➡️) أو أزرار الشاشة الجانبية</span>
+      </div>
+    </div>
+
+    <!-- رسالة العشق الملكية المخملية -->
+    <div id="love-modal">
+      <div class="royal-letter">
+        <div class="letter-badge" id="modal-category">✨ عهد الوفاء الأبدي ✨</div>
+        <div class="wax-seal">💌</div>
+        <div class="letter-salutation">حبيبتي وأميرتي شادية..</div>
+
+        <div class="letter-body">
+          <div class="letter-quote" id="modal-quote">
+            "يا شادية، أنتِ لستِ جزءاً من حياتي.. أنتِ الحياة بأكملها، وبداية كل فرح ونهايته."
+          </div>
+        </div>
+
+        <div class="letter-footer-meta" id="modal-counter-label">
+          ✨ رسالة العشق رقم 1 من أصل 50 ✨
+        </div>
+
+        <button class="continue-btn" id="resume-btn">
+          <span>أحبكِ يا شادية.. أكملي الرحلة</span>
+          <span>🚗💨</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================
+       1. موسوعة العبارات الرومانسية الغنية لـ "شادية" (50 عبارة شعرية)
+       مقسمة لتصنيفات غرامية فخمة تمس القلب
+       ======================================================== */
+    const romanticQuotes = [
+      { text: "يا شادية، أنتِ لستِ جزءاً من حياتي.. أنتِ الحياة بأكملها، وبداية كل فرح ونهايته.", cat: "عهد الوفاء الأبدي 👑" },
+      { text: "في عيون شادية رأيت وطناً يغنيني عن كل هذا العالم، وقلباً صادقاً لا يخون ولا يتبدل.", cat: "سحر عينيكِ 🌹" },
+      { text: "يا شادية، لو كان بإمكاني إهداؤك عمري لكتبت كل أيامه باسمكِ، نبضةً تلو نبضة.", cat: "نبض الفؤاد 💖" },
+      { text: "كل خطوة في هذا الدرب تقربني من حلمي الأبدي.. أن أراكِ أميرتي وشريكة عمري للأبد يا شادية.", cat: "حلم العمر 🕊️" },
+      { text: "أنتِ السكينة التي أبحث عنها بعد عناء كل طريق، ونور عيني الذي لا ينطفئ أبداً يا شادية.", cat: "نور دربي ✨" },
+      { text: "أحبكِ حباً يتجاوز حدود الحروف والكلمات، حباً يليق بطهر روحكِ وسحر ابتسامتكِ يا شادية.", cat: "أسمى معاني العشق ❤️" },
+      { text: "يا شادية، معكِ يغدو العمر بستاناً مزهراً، وتصبح كل الطرقات المؤدية إليكِ جنّة أمان.", cat: "واحة الأمان 🌸" },
+      { text: "ضحكتكِ يا شادية هي نغمتي المفضلة، ونور وجهكِ هو شمس أيامي الدافئة التي لا تغيب.", cat: "شمس أيامي ☀️" },
+      { text: "يا شادية، خطوبتنا لم تكن مجرد وعد.. كانت بداية عهد أبدي بأن تبقي تاجي وملكة فؤادي.", cat: "ميثاق الحب 💍" },
+      { text: "كلما نظرت إلى مستقبلي، لم أرَ فيه إلا ابتسامتكِ، ولم أتمنَّ فيه إلا يدكِ بيدي يا شادية.", cat: "مستقبلنا الجميل 🏡" },
+      { text: "عيناكِ يا شادية قصة عشق أقرأها كل يوم وأغرق في سحرها وكأني أراها للمرة الأولى.", cat: "قصيدة عشق 📜" },
+      { text: "أنتِ الوردة الوحيدة التي لا تذبل في بستان روحي، وسركِ يسكن في كل نبضة تناديكِ يا شادية.", cat: "وردة الروح 🌹" },
+      { text: "يا شادية، دمتِ لي وطناً أهرب إليه من كل زحام، وحضناً دافئاً تطمئن به روحي.", cat: "ملاذي الآمن 🏰" },
+      { text: "لو كان للجمال اسماً لكان 'شادية'، ولو كان للوفاء عنواناً لكان قلبكِ الصادق النقي.", cat: "عنوان الجمال ✨" },
+      { text: "أعاهدكِ يا شادية أمام الله والقلب، أن أكون سندكِ الدائم ودرعكِ الحامي وفرحكِ الأبدي.", cat: "عهد الرجال 🛡️" },
+      { text: "يا شادية، كل الطرقات التي لا تؤدي إليكِ هي ضياع، وكل دقيقة بدونكِ تنقص من عمري.", cat: "بوصلة قلبي 🧭" },
+      { text: "أنتِ الدعوة المستجابة التي دعوت بها ربي في ليلة صفاء، فجئتِ لتملأي دنيتي حباً يا شادية.", cat: "دعوة مستجابة 🤲" },
+      { text: "ملامحكِ يا شادية مرسومة بنور القمر، ورقتكِ تغار منها أرق ورود الربيع.", cat: "قمر الزمان 🌙" },
+      { text: "يا شادية، حبكِ تاج وضعته على رأسي، ومملكة عشق أنتِ وحدكِ مليكتها للأبد.", cat: "ملكة فؤادي 👑" },
+      { text: "الله يحميكِ لقلبي يا أغلى شادية بالكون، ويبارك في كل خطوة نخطوها معاً نحو بيتنا الجميل.", cat: "بركة الأيام 🕊️" },
+      { text: "صوتكِ يا شادية يزرع الطمأنينة في قلبي مثل مطر دافئ ينعش أرضاً مشتاقة.", cat: "نغم الروح 🎶" },
+      { text: "يا شادية، ما تمنيتُ من الدنيا سوى أن أكون سبباً في سعادتكِ ورسم البسمة على شفتيكِ.", cat: "أمنية العمر 🎁" },
+      { text: "أنتِ النجمة التي أهتدي بها في ظلمات طريقي، والبلسم لكل تعب يا روح شادية.", cat: "نجمتي المضيئة ⭐" },
+      { text: "يا شادية، معكِ عرفتُ أن الحب ليس كلاماً، بل أفعالٌ ووفاءٌ وروحٌ تسكن روحاً.", cat: "الحب الحقيقي 💞" },
+      { text: "حين أمسك بيدكِ يا شادية، أشعر أنني ملكت الدنيا وما فيها ولا ينقصني أي شيء.", cat: "دفء اللقاء 🤝" },
+      { text: "يا شادية، في كل سجدة ودعاء، اسمكِ يسبق كل أمنياتي لأنكِ أجملها وأغلاها.", cat: "دعاء المحبين 📿" },
+      { text: "حبكِ في قلبي كشجرة طيبة، أصلها ثابت في الوجدان وفرعها يعانق السماء يا شادية.", cat: "شجرة العشق 🌳" },
+      { text: "يا شادية، مهما كبرنا ومرت السنون، ستبقين طفلتي المدللة وأميرتي الأولى والأخيرة.", cat: "أميرتي المدللة 👧" },
+      { text: "جمال الكون كله يختصر في نظرة رضا وسعادة من عينيكِ الكحيلتين يا شادية.", cat: "عينان ساحرتان 👁️" },
+      { text: "يا شادية، بكِ اكتمل نصفي، وبكِ صار للحياة طعم أحلى وللأيام معنى أجمل.", cat: "نصفي الآخر 💖" },
+      { text: "أنتِ كنز عمري وثمرة صبري، والهدية العظيمة التي لا أفرط فيها أبداً يا شادية.", cat: "كنز الحياة 💎" },
+      { text: "يا شادية، سلامٌ لعينيكِ اللتين تجعلان العالم يبدو مكاناً آمناً ومليئاً بالأمل.", cat: "سلام العينين 🕊️" },
+      { text: "كل دقة قلب في صدري تخبرني أنكِ الأغلى والأجمل والأحب، دائماً وأبداً يا شادية.", cat: "نبضات صادقة 💓" },
+      { text: "يا شادية، سأظل أحبكِ في عسري ويسري، في فرحي وضيق طريقي، حتى آخر رمق في حياتي.", cat: "على العهد باقون 🤞" },
+      { text: "أنتِ مسكي وعنبري، وعطر أيامي الذي لا يزول.. أحبكِ يا أجمل خطيبة في العالم يا شادية.", cat: "شذى العمر 🌺" },
+      { text: "يا شادية، وجودكِ في حياتي هو الفارق بين أن أعيش عادياً وأن أعيش أميراً بحبكِ.", cat: "سر السعادة 🌟" },
+      { text: "أغمض عيني فأراكِ، وأفتحهما لأشتاق إليكِ، فحبكِ يا شادية لا يغيب عن خاطري لحظة.", cat: "شوق لا ينتهي 💫" },
+      { text: "يا شادية، كل تفاصيلكِ الصغيرة تعنيني، وكل همسة منكِ تُعيد ترتيب قلبي بفرح.", cat: "تفاصيلكِ الجميلة 🌸" },
+      { text: "أنتِ الصديقة والحبيبة والخطيبة وشريكة الروح والمسار، ولا تكتمل أيامي إلا بكِ يا شادية.", cat: "شريكة الروح 💍" },
+      { text: "يا شادية، لو سألوني عن وطني لقلت قلبكِ، ولو سألوني عن أمني لقلت دفء يديكِ.", cat: "وطني أنتِ 🏡" },
+      { text: "كل الورود تذبل إلا وردة حبكِ يا شادية، تكبر في قلبي كل يوم وتزداد بهاءً وعطراً.", cat: "عطر لا يزول 🌹" },
+      { text: "يا شادية، حبكِ رزقٌ ساقه الله لقلبي، فالحمد لله على نعمة وجودكِ في دنياي.", cat: "نعمة الرحمن 🤲" },
+      { text: "أنتِ لستِ خياري الوحيد، بل أنتِ قدري الجميل الذي سأظل أختاره في كل يوم يا شادية.", cat: "قدري الجميل 💖" },
+      { text: "يا شادية، ابتسامتكِ قادرة على محو تعب يومٍ كامل بلمح البصر، فلا تحرميني ضياها.", cat: "بلسم الروح ☀️" },
+      { text: "أحب فيكِ هدوءكِ وحنانكِ ونقاء سريرتكِ، فما رأيت في الأرض أنقى من قلبكِ يا شادية.", cat: "نقاء القلب 🤍" },
+      { text: "يا شادية، سنبني معاً بيتاً يملؤه الحب والسكينة، وستظلين فيه الملكة المتوجة على عرش قلبي.", cat: "قصر الأحلام 🏰" },
+      { text: "كل الطرق التي مشيتها كانت تمهيداً لألتقي بكِ وأعرف معنى الحب الحقيقي يا شادية.", cat: "صدفة العمر ✨" },
+      { text: "يا شادية، دقات قلبي تقسم أنكِ أغلى ما أملك، ولن ترضى بغيركِ سكناً أبداً.", cat: "قسم الوفاء 💓" },
+      { text: "أنتِ بداية الحكاية وختامها، وكل السطور التي بينهما كُتبت بحبكِ يا شادية.", cat: "كتاب العمر 📖" },
+      { text: "يا شادية، أحبكِ اليوم وغداً وإلى الأبد، حباً لا ينقص ولا يشيخ مهما طال الزمان.", cat: "حب سرمدي ♾️" }
+    ];
+
+    let quoteDeck = [...romanticQuotes].sort(() => Math.random() - 0.5);
+    let currentQuoteIdx = 0;
+
+    function getNextQuote() {
+      if (currentQuoteIdx >= quoteDeck.length) {
+        quoteDeck = [...romanticQuotes].sort(() => Math.random() - 0.5);
+        currentQuoteIdx = 0;
+      }
+      return quoteDeck[currentQuoteIdx++];
+    }
+
+    /* ========================================================
+       2. محرك العوالم والمناطق وتغير الألوان (Romantic Zones)
+       4 عوالم رومانسية خلابة تنتقل اللعبة بينها بجمال وانسيابية
+       ======================================================== */
+    const ZONES = [
+      {
+        id: 'sunset_roses',
+        name: 'بوليفارد الورود والغروب 🌹',
+        tag: 'بوليفارد الورود',
+        icon: '🌹',
+        banner: 'مرحباً بكِ في بوليفارد الورود والغروب يا شادية 🌹',
+        asphalt: ['#1c1e21', '#282c31', '#1c1e21'],
+        sideWalk: '#3c363d',
+        curb1: '#b71c1c', curb2: '#f5f5f5',
+        grass: '#1a2916',
+        ambient: 'radial-gradient(circle at 50% 80%, rgba(255, 117, 143, 0.15) 0%, transparent 60%)',
+        leftDeco: 'rosebox', rightDeco: 'sakura',
+        petalColor: 'rgba(255, 117, 143, 0.85)',
+        roadLine: 'rgba(255, 255, 255, 0.9)',
+        studColor: '#ffd166'
+      },
+      {
+        id: 'coastal_beach',
+        name: 'طريق الساحل وبحر العشق 🌊',
+        tag: 'شاطئ بحر العشق',
+        icon: '🌊',
+        banner: 'أمواج البحر والشاطئ ترحب بحبيبتي شادية 🌊',
+        asphalt: ['#17202a', '#1f2e3d', '#17202a'],
+        sideWalk: '#283747',
+        curb1: '#0077b6', curb2: '#e0f2fe',
+        grass: '#b89230', // رمال شاطئية ذهبية
+        ambient: 'radial-gradient(circle at 50% 75%, rgba(0, 180, 216, 0.18) 0%, transparent 65%)',
+        leftDeco: 'ocean_waves', rightDeco: 'palm_tree',
+        petalColor: 'rgba(144, 224, 239, 0.85)',
+        roadLine: 'rgba(240, 249, 255, 0.95)',
+        studColor: '#00b4d8'
+      },
+      {
+        id: 'starry_night',
+        name: 'ليل النجوم واليراعات الساحرة ✨',
+        tag: 'ليل النجوم المخملي',
+        icon: '✨',
+        banner: 'سماء مرصعة بالنجوم تضيء لعيون شادية ✨',
+        asphalt: ['#0d0417', '#170929', '#0d0417'],
+        sideWalk: '#1a122e',
+        curb1: '#7209b7', curb2: '#f72585',
+        grass: '#090d1f',
+        ambient: 'radial-gradient(circle at 50% 70%, rgba(157, 78, 221, 0.22) 0%, transparent 60%)',
+        leftDeco: 'firefly_bush', rightDeco: 'magic_tree',
+        petalColor: 'rgba(247, 37, 133, 0.85)',
+        roadLine: 'rgba(224, 170, 255, 0.9)',
+        studColor: '#4cc9f0'
+      },
+      {
+        id: 'golden_autumn',
+        name: 'واحة الخريف الذهبي 🍁',
+        tag: 'واحة الخريف الذهبي',
+        icon: '🍁',
+        banner: 'أوراق الخريف الذهبية تحتفي بحبيبتي شادية 🍁',
+        asphalt: ['#21150e', '#301f15', '#21150e'],
+        sideWalk: '#3d2314',
+        curb1: '#d97706', curb2: '#fef3c7',
+        grass: '#5c2d12',
+        ambient: 'radial-gradient(circle at 50% 75%, rgba(245, 158, 11, 0.18) 0%, transparent 65%)',
+        leftDeco: 'maple_tree', rightDeco: 'autumn_lantern',
+        petalColor: 'rgba(245, 158, 11, 0.88)',
+        roadLine: 'rgba(254, 243, 199, 0.9)',
+        studColor: '#f59e0b'
+      }
+    ];
+
+    let currentZoneIndex = 0;
+
+    function getCurrentZone() {
+      return ZONES[currentZoneIndex];
+    }
+
+    function switchZone(newIndex) {
+      if (newIndex !== undefined) {
+        currentZoneIndex = newIndex % ZONES.length;
+      } else {
+        currentZoneIndex = (currentZoneIndex + 1) % ZONES.length;
+      }
+
+      const zone = getCurrentZone();
+      document.getElementById('zone-icon').textContent = zone.icon;
+      document.getElementById('zone-title').textContent = zone.name;
+      document.getElementById('ambient-overlay').style.background = zone.ambient;
+
+      // إشعار الانتقال إلى عالم جديد
+      showWorldBanner(zone.icon, zone.banner);
+    }
+
+    function showWorldBanner(icon, text) {
+      const banner = document.getElementById('world-transition-banner');
+      document.getElementById('banner-icon').textContent = icon;
+      document.getElementById('banner-text').textContent = text;
+      banner.classList.add('show');
+      setTimeout(() => {
+        banner.classList.remove('show');
+      }, 3500);
+    }
+
+    /* ========================================================
+       3. محرك النغمات الصوتية الرومانسية (Web Audio API)
+       ======================================================== */
+    class RomanticAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.isPlaying = false;
+        this.timer = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        if (!this.enabled) this.stop();
+        else this.startMelody();
+        return this.enabled;
+      }
+
+      playChime() {
+        if (!this.enabled) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const freqs = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+
+        freqs.forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, now + i * 0.05);
+
+          gain.gain.setValueAtTime(0, now + i * 0.05);
+          gain.gain.linearRampToValueAtTime(0.18, now + i * 0.05 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.05 + 0.55);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.05);
+          osc.stop(now + i * 0.05 + 0.6);
+        });
+      }
+
+      playFanfare() {
+        if (!this.enabled) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const chord = [329.63, 392.00, 493.88, 659.25];
+
+        chord.forEach(f => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now);
+
+          gain.gain.setValueAtTime(0.01, now);
+          gain.gain.linearRampToValueAtTime(0.14, now + 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 1.45);
+        });
+      }
+
+      startMelody() {
+        if (!this.enabled || this.isPlaying) return;
+        this.init();
+        this.isPlaying = true;
+
+        const chords = [
+          [261.63, 329.63, 392.00, 523.25], // C Major
+          [220.00, 261.63, 329.63, 440.00], // A Minor
+          [174.61, 220.00, 261.63, 349.23], // F Major
+          [196.00, 246.94, 293.66, 392.00]  // G Major
+        ];
+
+        let idx = 0;
+        const playBar = () => {
+          if (!this.isPlaying || !this.enabled) return;
+          const current = chords[idx % chords.length];
+          const now = this.ctx.currentTime;
+
+          current.forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.38);
+
+            gain.gain.setValueAtTime(0, now + i * 0.38);
+            gain.gain.linearRampToValueAtTime(0.04, now + i * 0.38 + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.38 + 0.95);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.38);
+            osc.stop(now + i * 0.38 + 1.0);
+          });
+
+          idx++;
+          this.timer = setTimeout(playBar, 1600);
+        };
+        playBar();
+      }
+
+      stop() {
+        this.isPlaying = false;
+        if (this.timer) {
+          clearTimeout(this.timer);
+          this.timer = null;
+        }
+      }
+    }
+
+    const sound = new RomanticAudioEngine();
+
+    /* ========================================================
+       4. محرك الرسوميات والفيزياء المتجاوب مع العوالم
+       ======================================================== */
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('game-container');
+
+    let W = 0, H = 0;
+    function resizeCanvas() {
+      W = container.clientWidth;
+      H = container.clientHeight;
+      canvas.width = W;
+      canvas.height = H;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // حالة اللعبة
+    let isRunning = false;
+    let isPaused = false;
+    let heartsCount = 0;
+    let distanceCount = 0;
+    let loveLevel = 25;
+    let totalRevealed = 0;
+    let nextZoneMilestone = 350; // انتقال تلقائي كل 350 متر
+
+    // ألوان وتخصيص سيارة اللاعب
+    let carColorTheme = 'red'; // 'red', 'pink', 'gold', 'cyan'
+    const CAR_PALETTES = {
+      red: { base: '#c9184a', dark: '#590d22', light: '#ff758f', leather: '#4a081c' },
+      pink: { base: '#ff758f', dark: '#c9184a', light: '#ffb3c1', leather: '#590d22' },
+      gold: { base: '#d4af37', dark: '#78590f', light: '#ffd166', leather: '#33200a' },
+      cyan: { base: '#00b4d8', dark: '#03045e', light: '#90e0ef', leather: '#0a192f' }
+    };
+
+    // بارامترات الطريق والسيارة
+    const road = {
+      yOffset: 0,
+      speed: 6.8,
+      getLeft() { return W * 0.15; },
+      getRight() { return W * 0.85; },
+      getWidth() { return W * 0.70; },
+      getLaneCount() { return 3; }
+    };
+
+    const car = {
+      x: 0,
+      y: 0,
+      w: 64,
+      h: 118,
+      speedX: 0,
+      tilt: 0,
+      maxSpeedX: 6.5
+    };
+
+    // عناصر العالم
+    let roadsideElements = [];
+    let roadHearts = [];
+    let skidMarks = [];
+    let fallingParticles = [];
+    let sparkleBursts = [];
+    let oceanWaveOffset = 0;
+
+    function initWorld() {
+      roadsideElements = [];
+      roadHearts = [];
+      skidMarks = [];
+      fallingParticles = [];
+      sparkleBursts = [];
+
+      car.x = W / 2;
+      car.y = H - 170;
+
+      const count = 18;
+      const spacing = (H * 1.6) / count;
+      for (let i = 0; i < count; i++) {
+        const y = i * spacing - H * 0.2;
+        roadsideElements.push(createSideElement('left', y));
+        roadsideElements.push(createSideElement('right', y + spacing * 0.5));
+      }
+
+      for (let i = 0; i < 35; i++) {
+        fallingParticles.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          size: 5 + Math.random() * 7,
+          vy: 1.6 + Math.random() * 2,
+          vx: Math.sin(Math.random() * Math.PI) * 1.6,
+          rot: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.05
+        });
+      }
+    }
+
+    function createSideElement(side, y) {
+      const zone = getCurrentZone();
+      const type = (side === 'left') ? zone.leftDeco : zone.rightDeco;
+      return { side, y, type };
+    }
+
+    let nextHeartDist = 130;
+    function spawnHearts() {
+      if (nextHeartDist <= 0) {
+        const roadL = road.getLeft();
+        const roadW = road.getWidth();
+        const laneW = roadW / road.getLaneCount();
+        const lane = Math.floor(Math.random() * road.getLaneCount());
+        const heartX = roadL + lane * laneW + laneW / 2;
+
+        roadHearts.push({
+          x: heartX,
+          y: -60,
+          radius: 23,
+          pulse: Math.random() * Math.PI,
+          spin: 0
+        });
+
+        nextHeartDist = 280 + Math.random() * 160;
+      } else {
+        nextHeartDist -= road.speed;
+      }
+    }
+
+    /* ========================================================
+       5. رسم الشارع والعوالم وتغير الألوان التفاعلي
+       ======================================================== */
+    function drawWorldRoad() {
+      const zone = getCurrentZone();
+      const roadL = road.getLeft();
+      const roadR = road.getRight();
+      const roadW = road.getWidth();
+
+      // 1. أرضية المروج أو الشاطئ أو الليل الجانبي
+      ctx.fillStyle = zone.grass;
+      ctx.fillRect(0, 0, W, H);
+
+      // في حالة عالم الساحل (Coastal Beach): رسم أمواج البحر على الجانب الأيسر
+      if (zone.id === 'coastal_beach') {
+        oceanWaveOffset += 0.04;
+        const waveX = roadL - 10;
+        const oceanGrad = ctx.createLinearGradient(0, 0, waveX, 0);
+        oceanGrad.addColorStop(0, '#0077b6');
+        oceanGrad.addColorStop(0.7, '#0096c7');
+        oceanGrad.addColorStop(1, '#48cae4');
+        ctx.fillStyle = oceanGrad;
+        ctx.fillRect(0, 0, waveX, H);
+
+        // خط رغوة الأمواج البيضاء المتلاطمة
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let y = 0; y <= H; y += 15) {
+          const ox = waveX - 4 + Math.sin(y * 0.05 + oceanWaveOffset) * 6;
+          if (y === 0) ctx.moveTo(ox, y);
+          else ctx.lineTo(ox, y);
+        }
+        ctx.stroke();
+      }
+
+      // 2. الرصيف الحجري/الرخامي الجانبي
+      const drawSidewalk = (x, w) => {
+        ctx.fillStyle = zone.sideWalk;
+        ctx.fillRect(x, 0, w, H);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1;
+        const tileSize = 26;
+        const startY = (road.yOffset % tileSize) - tileSize;
+
+        for (let py = startY; py < H + tileSize; py += tileSize) {
+          ctx.beginPath();
+          ctx.moveTo(x, py);
+          ctx.lineTo(x + w, py);
+          ctx.stroke();
+
+          for (let px = x; px < x + w; px += tileSize) {
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(px, py + tileSize);
+            ctx.stroke();
+          }
+        }
+      };
+
+      drawSidewalk(W * 0.04, roadL - W * 0.04);
+      drawSidewalk(roadR, roadL - W * 0.04);
+
+      // 3. حواف الرصيف الخرسانية (Curbs) بألوان العالم
+      const curbW = 11;
+      const curbStep = 34;
+      const curbShift = road.yOffset % (curbStep * 2);
+
+      const drawCurbs = (curbX) => {
+        for (let cy = -curbStep * 2; cy < H + curbStep * 2; cy += curbStep) {
+          const actualY = cy + curbShift;
+          const isPrimary = Math.floor(actualY / curbStep) % 2 === 0;
+          ctx.fillStyle = isPrimary ? zone.curb1 : zone.curb2;
+          ctx.fillRect(curbX, actualY, curbW, curbStep);
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.fillRect(curbX, actualY + curbStep - 2, curbW, 2);
+        }
+      };
+
+      drawCurbs(roadL - curbW);
+      drawCurbs(roadR);
+
+      // 4. الأسفلت الواقعي بألوان العالم الحالي
+      const asphaltGrad = ctx.createLinearGradient(roadL, 0, roadR, 0);
+      asphaltGrad.addColorStop(0, zone.asphalt[0]);
+      asphaltGrad.addColorStop(0.5, zone.asphalt[1]);
+      asphaltGrad.addColorStop(1, zone.asphalt[2]);
+
+      ctx.fillStyle = asphaltGrad;
+      ctx.fillRect(roadL, 0, roadW, H);
+
+      // طبعات الإطارات المطاطية على الأسفلت
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.4)';
+      const laneW = roadW / road.getLaneCount();
+      for (let l = 0; l < road.getLaneCount(); l++) {
+        const laneCenterX = roadL + l * laneW + laneW / 2;
+        ctx.fillRect(laneCenterX - 18, 0, 9, H);
+        ctx.fillRect(laneCenterX + 9, 0, 9, H);
+      }
+
+      // آثار تفحيط وفرامل مطاطية
+      for (let i = skidMarks.length - 1; i >= 0; i--) {
+        const sm = skidMarks[i];
+        sm.y += road.speed;
+        sm.alpha -= 0.009;
+
+        if (sm.alpha <= 0 || sm.y > H + 50) {
+          skidMarks.splice(i, 1);
+          continue;
+        }
+
+        ctx.fillStyle = `rgba(10, 10, 10, ${sm.alpha * 0.45})`;
+        ctx.fillRect(sm.x - 3, sm.y, 6, sm.len);
+      }
+
+      // 5. خطوط حافة الطريق المتصلة
+      ctx.strokeStyle = zone.roadLine;
+      ctx.lineWidth = 3.5;
+      ctx.shadowColor = zone.roadLine;
+      ctx.shadowBlur = 4;
+
+      ctx.beginPath();
+      ctx.moveTo(roadL + 6, 0);
+      ctx.lineTo(roadL + 6, H);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(roadR - 6, 0);
+      ctx.lineTo(roadR - 6, H);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // 6. خطوط المسارات المتقطعة + عيون القطط المضيئة بألوان العالم
+      ctx.strokeStyle = zone.roadLine;
+      ctx.lineWidth = 3.5;
+      ctx.setLineDash([44, 36]);
+      ctx.lineDashOffset = -road.yOffset;
+
+      for (let l = 1; l < road.getLaneCount(); l++) {
+        const lx = roadL + l * laneW;
+        ctx.beginPath();
+        ctx.moveTo(lx, 0);
+        ctx.lineTo(lx, H);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      // عيون القطط الأرضية المضيئة
+      const studStep = 80;
+      const studShift = road.yOffset % studStep;
+      for (let sy = -studStep; sy < H + studStep; sy += studStep) {
+        const py = sy + studShift;
+        for (let l = 1; l < road.getLaneCount(); l++) {
+          const lx = roadL + l * laneW;
+          ctx.fillStyle = zone.studColor;
+          ctx.shadowColor = zone.studColor;
+          ctx.shadowBlur = 6;
+          ctx.fillRect(lx - 2, py - 3, 4, 6);
+          ctx.shadowBlur = 0;
+        }
+      }
+    }
+
+    /* ========================================================
+       6. رسم ديكورات العوالم المتنوعة على الأرصفة
+       ======================================================== */
+    function drawDecorations() {
+      const roadL = road.getLeft();
+      const roadR = road.getRight();
+
+      roadsideElements.forEach(item => {
+        item.y += road.speed;
+        if (item.y > H + 120) {
+          item.y = -80;
+          const zone = getCurrentZone();
+          item.type = (item.side === 'left') ? zone.leftDeco : zone.rightDeco;
+        }
+
+        const posX = (item.side === 'left') ? roadL - 46 : roadR + 46;
+
+        // حوض الورد الفاخر
+        if (item.type === 'rosebox') {
+          ctx.fillStyle = '#2c140a';
+          ctx.fillRect(posX - 20, item.y - 12, 40, 24);
+          ctx.strokeStyle = '#d4af37';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(posX - 20, item.y - 12, 40, 24);
+
+          const colors = ['#c9184a', '#ff4d6d', '#ffd166'];
+          for (let f = 0; f < 5; f++) {
+            const fx = posX - 12 + f * 6;
+            const fy = item.y - 4 + (f % 2) * 6;
+            ctx.fillStyle = colors[f % colors.length];
+            ctx.beginPath();
+            ctx.arc(fx, fy, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // شجرة الكرز الوردية
+        else if (item.type === 'sakura') {
+          ctx.fillStyle = 'rgba(10, 15, 10, 0.35)';
+          ctx.beginPath();
+          ctx.ellipse(posX + 14, item.y + 14, 28, 20, 0.3, 0, Math.PI * 2);
+          ctx.fill();
+
+          const blooms = ['#ff758f', '#ff4d6d', '#ffb3c1', '#ffffff'];
+          blooms.forEach((c, idx) => {
+            ctx.fillStyle = c;
+            ctx.beginPath();
+            ctx.arc(posX + (idx % 2 === 0 ? -8 : 8), item.y + (idx < 2 ? -8 : 8), 18 - idx * 2, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+
+        // شجرة النخيل الساحلية (Coastal Palm)
+        else if (item.type === 'palm_tree') {
+          ctx.fillStyle = '#654321';
+          ctx.fillRect(posX - 4, item.y - 20, 8, 40);
+
+          ctx.fillStyle = '#2d6a4f';
+          for (let a = 0; a < 6; a++) {
+            const angle = (a / 6) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.ellipse(posX + Math.cos(angle) * 16, item.y - 20 + Math.sin(angle) * 12, 14, 6, angle, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // شجرة خريف ذهبية بأوراق القيقب (Maple Tree)
+        else if (item.type === 'maple_tree') {
+          ctx.fillStyle = 'rgba(20, 10, 5, 0.4)';
+          ctx.beginPath();
+          ctx.ellipse(posX + 12, item.y + 12, 26, 18, 0.3, 0, Math.PI * 2);
+          ctx.fill();
+
+          const mapleColors = ['#d97706', '#ea580c', '#b45309', '#fef08a'];
+          mapleColors.forEach((c, idx) => {
+            ctx.fillStyle = c;
+            ctx.beginPath();
+            ctx.arc(posX + (idx % 2 === 0 ? -7 : 7), item.y + (idx < 2 ? -7 : 7), 18 - idx * 2, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+
+        // شجيرات اليراعات السحرية المضيئة في ليل النجوم
+        else if (item.type === 'firefly_bush' || item.type === 'magic_tree') {
+          ctx.fillStyle = '#1c1438';
+          ctx.beginPath();
+          ctx.arc(posX, item.y, 22, 0, Math.PI * 2);
+          ctx.fill();
+
+          // يراعات مضيئة تطير وتومض
+          const fcolors = ['#4cc9f0', '#7209b7', '#f72585', '#ffd166'];
+          for (let f = 0; f < 4; f++) {
+            const fx = posX - 14 + Math.random() * 28;
+            const fy = item.y - 14 + Math.random() * 28;
+            ctx.fillStyle = fcolors[f];
+            ctx.shadowColor = fcolors[f];
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(fx, fy, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+        }
+      });
+    }
+
+    /* ========================================================
+       7. رسم قلوب الياقوت والسيارة الرياضية الفخمة
+       ======================================================== */
+    function drawRubyHeart(cx, cy, size, pulse, spin) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      const scaleS = (1 + Math.sin(pulse) * 0.12);
+      const flipX = Math.cos(spin);
+      ctx.scale(scaleS * flipX, scaleS);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.beginPath();
+      ctx.ellipse(0, size * 0.85, size * 0.65, size * 0.25, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const glowR = size * 1.65;
+      const radGlow = ctx.createRadialGradient(0, 0, 4, 0, 0, glowR);
+      radGlow.addColorStop(0, 'rgba(255, 209, 102, 0.85)');
+      radGlow.addColorStop(0.55, 'rgba(201, 24, 74, 0.5)');
+      radGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = radGlow;
+      ctx.beginPath();
+      ctx.arc(0, 0, glowR, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#c9184a';
+      ctx.shadowColor = '#ffd166';
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      const topH = size * 0.3;
+      ctx.moveTo(0, topH);
+      ctx.bezierCurveTo(0, -size * 0.2, -size * 0.6, -size * 0.2, -size * 0.6, topH);
+      ctx.bezierCurveTo(-size * 0.6, size * 0.6, 0, size * 0.9, 0, size * 1.15);
+      ctx.bezierCurveTo(0, size * 0.9, size * 0.6, size * 0.6, size * 0.6, topH);
+      ctx.bezierCurveTo(size * 0.6, -size * 0.2, 0, -size * 0.2, 0, topH);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#ffd166';
+      ctx.beginPath();
+      ctx.moveTo(0, topH + 3);
+      ctx.bezierCurveTo(0, 0, -size * 0.35, 0, -size * 0.35, topH + 3);
+      ctx.bezierCurveTo(-size * 0.35, size * 0.5, 0, size * 0.7, 0, size * 0.85);
+      ctx.bezierCurveTo(0, size * 0.7, size * 0.35, size * 0.5, size * 0.35, topH + 3);
+      ctx.bezierCurveTo(size * 0.35, 0, 0, 0, 0, topH + 3);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function renderRoadHearts() {
+      roadHearts.forEach(heart => {
+        heart.pulse += 0.08;
+        heart.spin += 0.04;
+        drawRubyHeart(heart.x, heart.y, heart.radius, heart.pulse, heart.spin);
+      });
+    }
+
+    function drawCustomCar() {
+      ctx.save();
+      ctx.translate(car.x, car.y);
+      ctx.rotate(car.tilt);
+
+      const w = car.w;
+      const h = car.h;
+      const pal = CAR_PALETTES[carColorTheme] || CAR_PALETTES.red;
+
+      // 1. كشافات زينون الأمامية تسلط حزمتي ضوء حقيقيتين على الأسفلت
+      const beamGrad = ctx.createRadialGradient(0, -h * 0.45, 12, 0, -h * 1.6, 160);
+      beamGrad.addColorStop(0, 'rgba(255, 245, 205, 0.52)');
+      beamGrad.addColorStop(0.45, 'rgba(255, 235, 180, 0.26)');
+      beamGrad.addColorStop(1, 'transparent');
+
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(-w * 0.35, -h * 0.4);
+      ctx.lineTo(-w * 0.95, -h * 1.85);
+      ctx.lineTo(w * 0.95, -h * 1.85);
+      ctx.lineTo(w * 0.35, -h * 0.4);
+      ctx.closePath();
+      ctx.fill();
+
+      // 2. ظل السيارة الواقعي
+      ctx.fillStyle = 'rgba(10, 12, 15, 0.65)';
+      ctx.beginPath();
+      ctx.roundRect(-w * 0.56, -h * 0.48, w * 1.12, h * 1.06, 24);
+      ctx.fill();
+
+      // 3. الإطارات الرياضية الأربعة
+      ctx.fillStyle = '#0f1113';
+      const tw = 12;
+      const th = 26;
+      ctx.fillRect(-w * 0.5 - 4, -h * 0.36, tw, th);
+      ctx.fillRect(w * 0.5 - 8, -h * 0.36, tw, th);
+      ctx.fillRect(-w * 0.5 - 4, h * 0.18, tw, th);
+      ctx.fillRect(w * 0.5 - 8, h * 0.18, tw, th);
+
+      // جنوط فضية
+      ctx.fillStyle = '#ced4da';
+      ctx.fillRect(-w * 0.5 - 2, -h * 0.3, 3, th - 12);
+      ctx.fillRect(w * 0.5 - 3, -h * 0.3, 3, th - 12);
+      ctx.fillRect(-w * 0.5 - 2, h * 0.24, 3, th - 12);
+      ctx.fillRect(w * 0.5 - 3, h * 0.24, 3, th - 12);
+
+      // 4. هيكل السيارة الانسيابي باللون المختار مع تأثير اللمعان
+      const carGrad = ctx.createLinearGradient(-w * 0.5, 0, w * 0.5, 0);
+      carGrad.addColorStop(0, pal.dark);
+      carGrad.addColorStop(0.2, pal.base);
+      carGrad.addColorStop(0.5, pal.light);
+      carGrad.addColorStop(0.8, pal.base);
+      carGrad.addColorStop(1, pal.dark);
+
+      ctx.fillStyle = carGrad;
+      ctx.shadowColor = pal.base;
+      ctx.shadowBlur = 15;
+
+      ctx.beginPath();
+      ctx.roundRect(-w * 0.5, -h * 0.5, w, h, [22, 22, 18, 18]);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // خطوط الكبوت الهوائية
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-w * 0.25, -h * 0.46);
+      ctx.lineTo(-w * 0.16, -h * 0.22);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(w * 0.25, -h * 0.46);
+      ctx.lineTo(w * 0.16, -h * 0.22);
+      ctx.stroke();
+
+      // 5. المقصورة الجلدية الفاخرة
+      ctx.fillStyle = '#1c0812';
+      ctx.beginPath();
+      ctx.roundRect(-w * 0.38, -h * 0.2, w * 0.76, h * 0.46, 14);
+      ctx.fill();
+
+      // الزجاج الأمامي العاكس لضوء السماء
+      const glassGrad = ctx.createLinearGradient(0, -h * 0.24, 0, -h * 0.1);
+      glassGrad.addColorStop(0, 'rgba(235, 245, 255, 0.88)');
+      glassGrad.addColorStop(1, 'rgba(180, 220, 245, 0.35)');
+      ctx.fillStyle = glassGrad;
+      ctx.beginPath();
+      ctx.roundRect(-w * 0.34, -h * 0.22, w * 0.68, h * 0.12, 6);
+      ctx.fill();
+
+      // المقاعد الجلدية الفاخرة
+      ctx.fillStyle = pal.leather;
+      ctx.beginPath();
+      ctx.roundRect(-w * 0.3, -h * 0.08, w * 0.26, h * 0.26, 6);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.roundRect(w * 0.04, -h * 0.08, w * 0.26, h * 0.26, 6);
+      ctx.fill();
+
+      // باقة ورود حمراء ضخمة على المقعد المجاور 💐
+      ctx.font = "18px sans-serif";
+      ctx.fillText("💐", w * 0.06, h * 0.08);
+
+      // مقود السيارة المذهب
+      ctx.strokeStyle = '#ffd166';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(-w * 0.17, -h * 0.06, 7.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // المرايا الجانبية
+      ctx.fillStyle = pal.base;
+      ctx.fillRect(-w * 0.5 - 6, -h * 0.18, 6, 10);
+      ctx.fillRect(w * 0.5, -h * 0.18, 6, 10);
+      ctx.fillStyle = '#f8f9fa';
+      ctx.fillRect(-w * 0.5 - 5, -h * 0.17, 2, 8);
+      ctx.fillRect(w * 0.5 + 3, -h * 0.17, 2, 8);
+
+      // لوحة السيارة المخصصة باسم "شـاديـة ❤️"
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-25, h * 0.38, 50, 15);
+      ctx.strokeStyle = '#ffd166';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(-25, h * 0.38, 50, 15);
+
+      ctx.font = "bold 9.5px 'Cairo', sans-serif";
+      ctx.fillStyle = "#590d22";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("شـاديـة ❤️", 0, h * 0.38 + 7.5);
+
+      // أضواء الفرامل LED الخلفية المشتعلة
+      ctx.fillStyle = '#ff0038';
+      ctx.shadowColor = '#ff0038';
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.roundRect(-w * 0.44, h * 0.45, 17, 5, 2);
+      ctx.roundRect(w * 0.44 - 17, h * 0.45, 17, 5, 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawParticles() {
+      for (let i = sparkleBursts.length - 1; i >= 0; i--) {
+        const p = sparkleBursts[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.024;
+        p.size *= 0.98;
+
+        if (p.life <= 0) {
+          sparkleBursts.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        if (p.isHeart) {
+          ctx.font = `${Math.round(p.size * 2.2)}px sans-serif`;
+          ctx.fillText("💖", p.x, p.y);
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    function createSparkleBurst(x, y) {
+      for (let i = 0; i < 28; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2.5 + Math.random() * 6;
+        sparkleBursts.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 3 + Math.random() * 5,
+          color: ['#c9184a', '#ffd166', '#ffffff', '#ff758f', '#ffcad4'][Math.floor(Math.random() * 5)],
+          life: 1,
+          isHeart: Math.random() > 0.6
+        });
+      }
+    }
+
+    function drawFallingWorldParticles() {
+      const zone = getCurrentZone();
+      fallingParticles.forEach(p => {
+        p.y += p.vy + road.speed * 0.2;
+        p.x += p.vx;
+        p.rot += p.rotSpeed;
+        if (p.y > H + 20) { p.y = -20; p.x = Math.random() * W; }
+        if (p.x < -20) p.x = W + 20;
+        if (p.x > W + 20) p.x = -20;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = zone.petalColor;
+        ctx.shadowColor = zone.petalColor;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    /* ========================================================
+       8. حلقة التحديث والرسم الأساسية والتبديل التلقائي للعوالم
+       ======================================================== */
+    const keys = { ArrowLeft: false, ArrowRight: false, KeyA: false, KeyD: false };
+
+    function update() {
+      if (!isRunning || isPaused) return;
+
+      road.yOffset += road.speed;
+      distanceCount += Math.round(road.speed * 0.25);
+      document.getElementById('dist-val').textContent = distanceCount + 'm';
+
+      // فحص الانتقال التلقائي بين العوالم كل مسافة محددة
+      if (distanceCount >= nextZoneMilestone) {
+        nextZoneMilestone += 400; // العالم التالي بعد 400 متر
+        switchZone();
+      }
+
+      // توجيه السيارة بانسيابية وسلاسة تامة
+      const roadL = road.getLeft();
+      const roadR = road.getRight();
+      const minX = roadL + car.w / 2 + 10;
+      const maxX = roadR - car.w / 2 - 10;
+
+      let steer = 0;
+      if (keys.ArrowLeft || keys.KeyA) steer -= 1;
+      if (keys.ArrowRight || keys.KeyD) steer += 1;
+
+      if (steer !== 0) {
+        car.speedX += steer * 0.75;
+        if (Math.abs(car.speedX) > car.maxSpeedX) {
+          car.speedX = Math.sign(car.speedX) * car.maxSpeedX;
+        }
+        car.tilt = steer * 0.14;
+
+        if (Math.random() < 0.35) {
+          skidMarks.push({
+            x: car.x - car.w * 0.35,
+            y: car.y + car.h * 0.3,
+            len: 12,
+            alpha: 1
+          });
+          skidMarks.push({
+            x: car.x + car.w * 0.35,
+            y: car.y + car.h * 0.3,
+            len: 12,
+            alpha: 1
+          });
+        }
+      } else {
+        car.speedX *= 0.84;
+        car.tilt *= 0.8;
+      }
+
+      car.x += car.speedX;
+      if (car.x < minX) { car.x = minX; car.speedX = 0; }
+      if (car.x > maxX) { car.x = maxX; car.speedX = 0; }
+
+      spawnHearts();
+
+      for (let i = roadHearts.length - 1; i >= 0; i--) {
+        const heart = roadHearts[i];
+        heart.y += road.speed;
+
+        const dx = car.x - heart.x;
+        const dy = (car.y - 15) - heart.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < car.w * 0.6 + heart.radius) {
+          roadHearts.splice(i, 1);
+          heartsCount++;
+          document.getElementById('hearts-val').textContent = heartsCount;
+
+          loveLevel = Math.min(100, loveLevel + 4);
+          document.getElementById('love-fill').style.width = loveLevel + '%';
+          document.getElementById('love-percent').textContent = loveLevel + '%';
+
+          sound.playChime();
+          createSparkleBurst(heart.x, heart.y);
+
+          triggerLoveModal();
+          continue;
+        }
+
+        if (heart.y > H + 60) {
+          roadHearts.splice(i, 1);
+        }
+      }
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, W, H);
+
+      drawWorldRoad();
+      drawDecorations();
+      renderRoadHearts();
+      drawCustomCar();
+      drawParticles();
+      drawFallingWorldParticles();
+
+      update();
+      requestAnimationFrame(render);
+    }
+
+    /* ========================================================
+       9. النافذة المنبثقة الغرامية الملكية الموجهة لـ "شادية"
+       ======================================================== */
+    const loveModal = document.getElementById('love-modal');
+    const modalQuote = document.getElementById('modal-quote');
+    const modalCategory = document.getElementById('modal-category');
+    const modalCounterLabel = document.getElementById('modal-counter-label');
+    const resumeBtn = document.getElementById('resume-btn');
+    const quickToast = document.getElementById('quick-toast');
+
+    function flashToast(msg) {
+      quickToast.textContent = msg;
+      quickToast.classList.add('show');
+      setTimeout(() => quickToast.classList.remove('show'), 2000);
+    }
+
+    function triggerLoveModal() {
+      isPaused = true;
+      totalRevealed++;
+
+      const quote = getNextQuote();
+      modalQuote.textContent = `"${quote.text}"`;
+      modalCategory.textContent = `✨ ${quote.cat} ✨`;
+      modalCounterLabel.textContent = `✨ رسالة العشق رقم ${totalRevealed} من أصل ${romanticQuotes.length} ✨`;
+
+      sound.playFanfare();
+      loveModal.classList.add('active');
+    }
+
+    function resumeJourney() {
+      loveModal.classList.remove('active');
+      isPaused = false;
+      flashToast('💖 معكِ وبكِ تزهو حياتي يا شادية 💖');
+    }
+
+    resumeBtn.addEventListener('click', resumeJourney);
+
+    window.addEventListener('keydown', (e) => {
+      if (isPaused && (e.code === 'Space' || e.code === 'Enter')) {
+        resumeJourney();
+      }
+    });
+
+    /* ========================================================
+       10. أزرار التحكم والتفاعل وتبديل الألوان والعوالم
+       ======================================================== */
+    // تبديل العوالم بالزر
+    document.getElementById('switch-zone-btn').addEventListener('click', () => {
+      switchZone();
+    });
+
+    // تبديل لون السيارة بزر الـ HUD
+    const carColors = ['red', 'pink', 'gold', 'cyan'];
+    document.getElementById('car-color-btn').addEventListener('click', () => {
+      const curIdx = carColors.indexOf(carColorTheme);
+      carColorTheme = carColors[(curIdx + 1) % carColors.length];
+      flashToast(`🚗 تم تغيير لون السيارة!`);
+    });
+
+    // دوائر اختيار لون السيارة في شاشة البداية
+    document.querySelectorAll('.color-dot').forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        e.target.classList.add('active');
+        carColorTheme = e.target.getAttribute('data-color');
+      });
+    });
+
+    // لوحة المفاتيح
+    window.addEventListener('keydown', (e) => {
+      if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
+    });
+
+    // أزرار اللمس
+    const btnL = document.getElementById('btn-left');
+    const btnR = document.getElementById('btn-right');
+
+    btnL.addEventListener('pointerdown', (e) => { e.preventDefault(); keys.ArrowLeft = true; });
+    btnL.addEventListener('pointerup', (e) => { e.preventDefault(); keys.ArrowLeft = false; });
+    btnL.addEventListener('pointerleave', (e) => { e.preventDefault(); keys.ArrowLeft = false; });
+
+    btnR.addEventListener('pointerdown', (e) => { e.preventDefault(); keys.ArrowRight = true; });
+    btnR.addEventListener('pointerup', (e) => { e.preventDefault(); keys.ArrowRight = false; });
+    btnR.addEventListener('pointerleave', (e) => { e.preventDefault(); keys.ArrowRight = false; });
+
+    // زر الصوت
+    const soundBtn = document.getElementById('sound-btn');
+    soundBtn.addEventListener('click', () => {
+      const active = sound.toggle();
+      soundBtn.textContent = active ? '🎵' : '🔇';
+    });
+
+    // شاشة البداية
+    const startScreen = document.getElementById('start-screen');
+    const startBtn = document.getElementById('start-btn');
+
+    startBtn.addEventListener('click', () => {
+      sound.init();
+      sound.startMelody();
+
+      startScreen.style.opacity = '0';
+      setTimeout(() => {
+        startScreen.style.display = 'none';
+      }, 500);
+
+      initWorld();
+      isRunning = true;
+    });
+
+    // بدء التشغيل المبدئي
+    initWorld();
+    render();
+  </script>
+</body>
+</html>
